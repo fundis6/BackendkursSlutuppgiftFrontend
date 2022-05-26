@@ -6,26 +6,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog</title>
     <link rel="stylesheet" href="style.css">
-    
+    <script src="script.js" defer></script>
+
 </head>
 
 <body>
-    <script>
-        const data = {username: 'example'};
 
-        fetch('http://localhost:4000/user/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success', data);
-        })
-        .catch((error) => {
-            console.error('Error', error);
-        });
-    </script>
+
+    <h1 class="headline">Blog</h1>
+
+    <section class="top-bar">
+
+        <button type="button" class="home-button">Home</button>
+        <button type="button" class="post-button">Post</button>
+        <div class="empty-space"></div>
+        <button type="button" class="login-button">Login</button>
+        <button type="button" class="register-button">Register</button>
+    </section>
+
+    <form class="login" hidden>
+        <input type="text" class="login-username" placeholder="Username">
+        <input type="password" class="login-password" placeholder="Password">
+        <button type="submit" class="submit-login">Login</button>
+        <p class="login-message" hidden></p>
+    </form>
+
+    <form class="register" hidden>
+        <input type="text" class="register-firstname" placeholder="Firstname" required>
+        <input type="text" class="register-lastname" placeholder="Lastname" required>
+        <input type="text" class="register-username" placeholder="Username" required>
+        <input type="password" class="register-password" placeholder="Password" minlength="6" required>
+        <input type="password" class="register-password-confirm" placeholder="Enter your password again" minlength="6" required>
+        <button type="submit" class="submit-registration">Register</button>
+        <p class="register-message" hidden></p>
+
+    </form>
+
+    <form class="blogpost" hidden>
+        <p class="token"></p>
+        <input type="text" class="blogtext" placeholder="Write your blog text here!">
+        <button type="submit" class="blogpost-submit-button">Post</button>
+
+    </form>
+
 </body>
