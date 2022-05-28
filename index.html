@@ -13,6 +13,7 @@
 <body>
 
 
+
     <h1 class="headline">Blog</h1>
 
     <section class="top-bar">
@@ -22,6 +23,8 @@
         <div class="empty-space"></div>
         <button type="button" class="login-button">Login</button>
         <button type="button" class="register-button">Register</button>
+        <button type="button" class="posts-button" hidden>My Posts</button>
+        <button type="button" class="profile-button" hidden>Profile</button>
     </section>
 
     <form class="login" hidden>
@@ -46,7 +49,35 @@
         <p class="token"></p>
         <input type="text" class="blogtext" placeholder="Write your blog text here!">
         <button type="submit" class="blogpost-submit-button">Post</button>
-
+        <p class="post-message" hidden></p>
     </form>
+
+    <form class="comment">
+        <input type="text" class="comment-text" placeholder="Write your comment here...">
+        <button type="submit" class="comment-submit-button">Submit</button>
+    </form>
+
+    <section class="posts" hidden>
+        <h2>Posts</h2>
+        <ul class="post-list"></ul>
+    </section>
+
+    <section class="profile" hidden>
+        <h1>Profile</h1>
+    </section>
+
+    <form class="update" hidden>
+        <input type="text" class="update-firstname" placeholder="Firstname" required>
+        <input type="text" class="update-lastname" placeholder="Lastname" required>
+        <input type="text" class="update-username" placeholder="Username" required>
+        <input type="password" class="update-password" placeholder="Password" minlength="6" required>
+        <input type="password" class="update-password-confirm" placeholder="Enter your password again" minlength="6" required>
+        <button type="submit" class="submit-update">update</button>
+        <p class="update-message" hidden></p>
+    </form>
+
+    <section class="my-posts">
+        <ul class="my-posts-list"></ul>
+    </section>
 
 </body>

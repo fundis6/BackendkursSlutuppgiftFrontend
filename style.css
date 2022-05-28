@@ -9,23 +9,25 @@
 .top-bar {
     margin-top: 10px;
     display: grid;
-    grid-template-columns: 1fr 1fr 6fr 1fr 1fr;
-}
-
-.home-button {
-    margin-left: 10px;
+    grid-template-columns: 1fr 1fr 4fr 1fr 1fr;
 }
 
 .headline {
     margin-top: 10px;
-    font-size: 60px;
+    font-size: 80px;
     text-align: center;
 }
 
 .top-bar button {
     font-size: 18px;
     height: 30px;
-    width: 100px;
+    width: 130px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.posts-button {
+    width: auto;
 }
 
 input {
@@ -61,4 +63,73 @@ form {
 p {
     font-size: 30px;
     text-align: center;
+}
+
+.post-list li {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    list-style-type: none;
+    display: grid;
+    grid-template-areas: "a a a" "b b c" "d e f" "g g g";
+    grid-template-columns: 3fr 1fr 2fr;
+}
+
+.post-list li h2 {
+    grid-area: a;
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.post-list li h3 {
+    grid-area: b;
+    font-size: 25px;
+    margin-bottom: 5px;
+    color: darkslategrey;
+}
+
+.post-list li button :first-child {
+    grid-area: d;
+    margin-bottom: 5px;
+    width: fit-content;
+    height: auto;
+}
+
+.post-list li h4 {
+    grid-area: f;
+    font-size: 25px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.post-list li h5 {
+    text-align: center;
+    grid-area: c;
+    font-size: 20px;
+}
+
+.posts h2 {
+    text-align: center;
+    font-size: 55px;
+    margin: 30px;
+}
+
+.post-list li button :nth-child(2) {
+    grid-area: e;
+    margin-bottom: 5px;
+    width: fit-content;
+    height: auto;
+}
+
+button {
+    border-radius: 5px;
+}
+
+.post-list li ul {
+    grid-area: g;
+    margin: 0;
+}
+
+.post-list li ul li p {
+    font-size: 15px;
 }
