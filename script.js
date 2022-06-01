@@ -37,6 +37,11 @@ const updatePasswordConfirm = document.querySelector(".update-password-confirm")
 const updateMessage = document.querySelector(".update-message")
 const myPosts = document.querySelector(".my-posts")
 const myPostsList = document.querySelector(".my-posts-list")
+const updatePostForm = document.querySelector(".update-post")
+const updatePostInput = document.querySelector(".update-posttext")
+const updatePostSubmitButton = document.querySelector(".submit-update-post")
+
+localStorage.clear();
 
 
 
@@ -47,6 +52,7 @@ postBlogPost.style.display = 'none';
 commentSection.style.display = 'none';
 myPosts.style.display = 'none';
 updateForm.style.display = 'none';
+updatePostForm.style.display = 'none';
 
 loginButton.onclick = event => {
 
@@ -74,7 +80,7 @@ postButton.onclick = event => {
 profileButton.onclick = event => {
     ClearAllForms();
     GetCurrentUser();
-    profileSection.hidden = false;
+    profileSection.style.display = 'block';
 }
 
 myPostsButton.onclick = event => {
@@ -83,54 +89,32 @@ myPostsButton.onclick = event => {
     myPosts.style.display = 'block';
 }
 
-function GetMyUserId() {
-    let userId;
-    fetch('http://localhost:4000/users/getCurrentUser', {
+
+
+async function GetMyPosts() {
+
+    myPostsList.innerHTML = '';
+    let userId = localStorage.getItem('userId');
+    console.log(userId);
+
+    fetch('http://localhost:4000/blogposts', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success', data);
-
-            userId = data.id;
-        })
-        .catch((error) => {
-            console.error('Error', error);
-        });
-
-    GetMyPosts(userId);
-}
-
-async function GetMyPosts(userId) {
-
-
-
-
-    fetch('http://localhost:4000/blogposts/myPosts/' + userId, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
             }
         })
         .then(response => response.json())
         .then(data => {
             console.log('Success', data);
             data.forEach(element => {
-                AddToMyPostList(element);
-                console.log(data);
+                if (element.userId == userId) {
+                    AddToMyPostList(element);
+                }
             });
         })
         .catch((error) => {
             console.error('Error', error);
         });
-
-
-
 }
 
 function AddToMyPostList(data) {
@@ -164,22 +148,17 @@ function AddToMyPostList(data) {
     timePosted.textContent = 'Posted: ' + date;
 
 
-
-
-
-
-
     let liElement = document.createElement('li');
     liElement.append(postText);
     liElement.append(username);
     liElement.append(timePosted);
-    liElement.append(likesButton);
+    liElement.append(likesEmoji);
     liElement.append(likesCounter);
 
     myPostsList.append(liElement);
 
 }
-registerForm.onsubmit = event => {
+updateForm.onsubmit = event => {
     event.preventDefault();
     if (updatePassword.value == updatePasswordConfirm.value) {
         const data = {
@@ -190,7 +169,7 @@ registerForm.onsubmit = event => {
         };
 
         fetch('http://localhost:4000/users/updateCurrent', {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': localStorage.getItem('token')
@@ -214,11 +193,23 @@ registerForm.onsubmit = event => {
     }
 }
 
+function ClearAllRegisterInputs() {
+    registerFirstname.value = '';
+    registerLastname.value = '';
+    registerUsername.value = '';
+    registerPassword.value = '';
+    registerPasswordConfirm.value = '';
+}
+
 function GetCurrentUser() {
+
+    profileSection.innerHTML = '';
 
     let profileFirstname = document.createElement('p');
     let profileLastname = document.createElement('p');
     let profileUsername = document.createElement('p');
+
+    let user;
 
     fetch('http://localhost:4000/users/getCurrentUser', {
             method: 'GET',
@@ -230,7 +221,7 @@ function GetCurrentUser() {
         .then(response => response.json())
         .then(data => {
             console.log('Success', data);
-
+            user = data;
             profileFirstname.textContent = 'Firstname: ' + data.firstName;
             profileLastname.textContent = 'Lastname: ' + data.lastName;
             profileUsername.textContent = 'Username: ' + data.username;
@@ -243,15 +234,38 @@ function GetCurrentUser() {
     updateProfileButton.type = 'button';
     updateProfileButton.textContent = 'Update profile';
 
+    let deleteProfileButton = document.createElement('button');
+    deleteProfileButton.type = 'button';
+    deleteProfileButton.textContent = 'Delete profile'
+
     profileSection.append(profileFirstname);
     profileSection.append(profileLastname);
     profileSection.append(profileUsername);
     profileSection.append(updateProfileButton);
+    profileSection.append(deleteProfileButton);
 
 
     updateProfileButton.onclick = event => {
         ClearAllForms();
+        updateForm.style.display = 'block';
 
+    }
+
+    deleteProfileButton.onclick = event => {
+        fetch('http://localhost:4000/users/' + user.id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success', data);
+            })
+            .catch((error) => {
+                console.error('Error', error);
+            });
     }
 }
 
@@ -275,11 +289,12 @@ registerForm.onsubmit = event => {
             .then(response => response.json())
             .then(data => {
                 console.log('Success', data);
+                registerMessage.textContent = 'Registration successful!'
             })
             .catch((error) => {
-                console.error('Error', error);
+                registerMessage.textContent = 'Username already exists!'
             });
-        registerMessage.textContent = 'Registration successful!'
+
         registerMessage.hidden = false;
         ClearAllRegisterInputs();
 
@@ -323,7 +338,7 @@ postBlogPost.onsubmit = event => {
     postMessage.hidden = false;
 }
 
-function ClearAllRegisterInputs() {
+function ClearAllUpdateInputs() {
     updateFirstname.value = '';
     updateLastname.value = '';
     updateUsername.value = '';
@@ -348,10 +363,15 @@ async function Login() {
         .then(data => {
             console.log('Success', data);
             localStorage.setItem('token', data.token)
-
+            localStorage.setItem('userId', data.id)
+            loginMessage.textContent = 'Login successful';
+            loginButton.hidden = true;
+            registerButton.hidden = true;
+            myPostsButton.hidden = false;
+            profileButton.hidden = false;
         })
         .catch((error) => {
-            console.error('Error', error);
+            loginMessage.textContent = 'Wrong username or password!'
         });
 
 
@@ -359,13 +379,10 @@ async function Login() {
 
 
 
-    loginButton.hidden = true;
-    registerButton.hidden = true;
-    myPostsButton.hidden = false;
-    profileButton.hidden = false;
 
 
-    loginMessage.textContent = 'Login successful';
+
+
     loginMessage.hidden = false;
 
 }
@@ -378,9 +395,14 @@ function ClearAllForms() {
     commentSection.style.display = 'none';
     myPosts.style.display = 'none';
     updateForm.style.display = 'none';
+    profileSection.style.display = 'none';
+    updatePostForm.style.display = 'none';
 }
 
 async function GetAllPosts() {
+
+
+
 
     postList.innerHTML = '';
     fetch('http://localhost:4000/blogposts', {
@@ -408,6 +430,9 @@ function AddToPostList(data) {
     let likes;
     let id = data.id;
 
+
+
+
     let postText = document.createElement('h2');
     postText.textContent = data.blogText;
     let username = document.createElement('h3');
@@ -420,6 +445,8 @@ function AddToPostList(data) {
     likesButton.textContent = '👍';
     let timePosted = document.createElement('h5');
     const date = formatDate(data.timeOfPost);
+
+
 
     function formatDate(date) {
         let d = new Date(date);
@@ -444,6 +471,8 @@ function AddToPostList(data) {
 
     GetCommentsForPost(id);
 
+
+
     let liElement = document.createElement('li');
     liElement.append(postText);
     liElement.append(username);
@@ -452,6 +481,69 @@ function AddToPostList(data) {
     liElement.append(likesButton);
     liElement.append(likesCounter);
     liElement.append(commentList);
+
+    let userId = localStorage.getItem('userId');
+
+    if (data.userId == userId) {
+        let deletePostButton = document.createElement('button');
+        deletePostButton.type = 'button';
+        deletePostButton.textContent = 'Delete post';
+        liElement.append(deletePostButton);
+
+        let updatePostButton = document.createElement('button');
+        updatePostButton.type = 'button';
+        updatePostButton.textContent = 'Update post';
+        liElement.append(updatePostButton);
+
+        deletePostButton.onclick = event => {
+            fetch('http://localhost:4000/blogposts/' + data.id, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('token')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success', data);
+                })
+                .catch((error) => {
+                    console.error('Error', error);
+                });
+        }
+
+        updatePostButton.onclick = event => {
+            ClearAllForms();
+            updatePostForm.style.display = 'block';
+
+            updatePostInput.value += data.blogText;
+
+            updatePostForm.onsubmit = event => {
+                event.preventDefault();
+                const updatedData = {
+                    'blogText': updatePostInput.value
+                }
+
+                fetch('http://localhost:4000/blogposts/' + data.id, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': localStorage.getItem('token')
+                        },
+                        body: JSON.stringify(updatedData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error', error);
+                    });
+            }
+        }
+    }
+
+
 
 
 

@@ -65,13 +65,17 @@ p {
     text-align: center;
 }
 
+.post-list {
+    margin-bottom: 20px;
+}
+
 .post-list li {
     width: 60%;
     margin-left: auto;
     margin-right: auto;
     list-style-type: none;
     display: grid;
-    grid-template-areas: "a a a" "b b c" "d e f" "g g g";
+    grid-template-areas: "a a a" "b b c" "d e f" "g g g" "h i i";
     grid-template-columns: 3fr 1fr 2fr;
 }
 
@@ -132,4 +136,22 @@ button {
 
 .post-list li ul li p {
     font-size: 15px;
+}
+
+.post-list li button :nth-child(3) {
+    grid-area: h;
+    margin-bottom: 5px;
+    width: fit-content;
+    height: auto;
+}
+
+.post-list li button :nth-child(4) {
+    grid-area: i;
+    margin-bottom: 5px;
+    width: fit-content;
+    height: auto;
+}
+
+.update-post input {
+    height: auto;
 }
