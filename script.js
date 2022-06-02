@@ -40,6 +40,7 @@ const myPostsList = document.querySelector(".my-posts-list")
 const updatePostForm = document.querySelector(".update-post")
 const updatePostInput = document.querySelector(".update-posttext")
 const updatePostSubmitButton = document.querySelector(".submit-update-post")
+const commentMessage = document.querySelector(".comment-message")
 
 localStorage.clear();
 
@@ -74,6 +75,8 @@ homeButton.onclick = event => {
 postButton.onclick = event => {
     ClearAllForms();
     postBlogPost.style.display = 'grid';
+    postMessage.textContent = '';
+    blogText.value = '';
 
 }
 
@@ -188,8 +191,8 @@ updateForm.onsubmit = event => {
         ClearAllUpdateInputs();
 
     } else {
-        registerMessage.value = 'Passwords did not match!'
-        registerMessage.hidden = false;
+        updateMessage.value = 'Passwords did not match!'
+        updateMessage.hidden = false;
     }
 }
 
@@ -314,27 +317,34 @@ loginForm.onsubmit = event => {
 postBlogPost.onsubmit = event => {
     event.preventDefault();
 
-    const data = {
-        "blogText": blogText.value
-    };
 
-    fetch('http://localhost:4000/blogposts/post', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": localStorage.getItem('token'),
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success', data);
-        })
-        .catch((error) => {
-            console.error('Error', error);
-        });
+    if (localStorage.getItem('token') == null) {
+        postMessage.textContent = "You cant make a post until you have logged in!"
+    } else {
+        const data = {
+            "blogText": blogText.value
+        };
 
-    postMessage.textContent = 'Posted!'
+        fetch('http://localhost:4000/blogposts/post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": localStorage.getItem('token'),
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success', data);
+            })
+            .catch((error) => {
+                console.error('Error', error);
+            });
+
+        postMessage.textContent = 'Posted!'
+    }
+
+
     postMessage.hidden = false;
 }
 
@@ -622,30 +632,42 @@ function AddToPostList(data) {
 
     commentButton.onclick = event => {
         ClearAllForms();
+        commentMessage.textContent = '';
+        commentText.value = '';
+
         commentSection.style.display = 'block';
 
         commentSection.onsubmit = event => {
             event.preventDefault();
-            const data = {
-                "commentText": commentText.value
-            };
 
-            fetch('http://localhost:4000/comments/' + id, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": localStorage.getItem('token'),
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success', data);
-                    AddCommentsToPostList(data);
-                })
-                .catch((error) => {
-                    console.error('Error', error);
-                });
+            if (localStorage.getItem('token') == null) {
+                commentMessage.textContent = 'Please log in before making a comment'
+            } else {
+                const data = {
+                    "commentText": commentText.value
+                };
+
+                fetch('http://localhost:4000/comments/' + id, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            "Authorization": localStorage.getItem('token'),
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success', data);
+                        AddCommentsToPostList(data);
+                    })
+                    .catch((error) => {
+                        console.error('Error', error);
+                    });
+                commentMessage.textContent = 'Comment posted!'
+            }
+
+            commentMessage.hidden = false;
+
         }
 
 
